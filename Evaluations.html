@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Evaluations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 2.5rem 0;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .tab.active {
+            color: var(--secondary);
+            border-bottom: 3px solid var(--secondary);
+            font-weight: bold;
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box, .sort-select, .filter-select {
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            font-size: 1rem;
+            background: white;
+        }
+
+        .search-box {
+            width: 250px;
+        }
+
+        .sort-select, .filter-select {
+            cursor: pointer;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .media-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            height: 180px;
+            position: relative;
+        }
+
+        .media-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .cover-container {
+            position: relative;
+            width: 120px;
+            flex-shrink: 0;
+        }
+
+        .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .media-info {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .media-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .media-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .media-year {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .rating {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .media-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .media-genre {
+            background-color: #f1f2f6;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .media-duration {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-cover {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .modal-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta-label {
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+
+        .meta-value {
+            font-weight: bold;
+        }
+
+        .overall-rating {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .overall-rating-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .rating-categories {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .rating-category {
+            background-color: #f8f9fa;
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .rating-category:hover {
+            background-color: #e9ecef;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .category-name {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-icon {
+            color: var(--secondary);
+        }
+
+        .category-rating {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .rating-value {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        .multiplier {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 150px;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 4px;
+        }
+
+        .subcategories {
+            display: none;
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .subcategory {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .subcategory:last-child {
+            border-bottom: none;
+        }
+
+        .subcategory-name {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .subcategory-rating {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .subcategory-progress-bar {
+            width: 120px;
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .subcategory-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 3px;
+        }
+
+        .subcategory-value {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1rem;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        .review-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: var(--radius);
+        }
+
+        .review-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .review-text {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+
+        .toggle-icon {
+            transition: var(--transition);
+        }
+
+        .category-header.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .section-tabs {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-filter {
+                width: 100%;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .media-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-details {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .progress-bar, .subcategory-progress-bar {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Media Evaluations</h1>
+        <p class="subtitle">A comprehensive collection of my ratings and reviews</p>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="section-tabs">
+                <div class="tab active" data-section="games">
+                    <i class="fas fa-gamepad"></i>
+                    Games
+                </div>
+                <div class="tab" data-section="live-action">
+                    <i class="fas fa-film"></i>
+                    Live Action
+                </div>
+                <div class="tab" data-section="animation">
+                    <i class="fas fa-paint-brush"></i>
+                    Animation
+                </div>
+            </div>
+            
+            <div class="search-filter">
+                <input type="text" class="search-box" id="search-box" placeholder="Search media...">
+                <select class="filter-select" id="filter-select">
+                    <option value="all">All Genres</option>
+                    <option value="action">Action</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="rpg">RPG</option>
+                    <option value="sci-fi">Sci-Fi</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="drama">Drama</option>
+                </select>
+                <select class="sort-select" id="sort-select">
+                    <option value="rating-desc">Highest Rating</option>
+                    <option value="rating-asc">Lowest Rating</option>
+                    <option value="title-asc">Title A-Z</option>
+                    <option value="title-desc">Title Z-A</option>
+                    <option value="year-desc">Newest First</option>
+                    <option value="year-asc">Oldest First</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <i class="fas fa-list stat-icon"></i>
+                <div class="stat-value" id="total-count">0</div>
+                <div class="stat-label">Total Evaluations</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-star stat-icon"></i>
+                <div class="stat-value" id="avg-rating">0.0</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trophy stat-icon"></i>
+                <div class="stat-value" id="highest-rating">0.0</div>
+                <div class="stat-label">Highest Rated</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock stat-icon"></i>
+                <div class="stat-value" id="recent-count">0</div>
+                <div class="stat-label">Recent Additions</div>
+            </div>
+        </div>
+
+        <!-- Games Section -->
+        <div class="section active" id="games">
+            <div class="media-grid" id="games-list">
+                <!-- Games will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Live Action Section -->
+        <div class="section" id="live-action">
+            <div class="media-grid" id="live-action-list">
+                <!-- Live Action will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Animation Section -->
+        <div class="section" id="animation">
+            <div class="media-grid" id="animation-list">
+                <!-- Animation will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for detailed view -->
+    <div class="modal" id="detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Media Title</h2>
+                <button class="close-btn" id="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img src="" alt="Cover" class="modal-cover" id="modal-cover">
+                
+                <div class="modal-details">
+                    <div class="modal-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Year:</span>
+                            <span class="meta-value" id="modal-year">2023</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Genre:</span>
+                            <span class="meta-value" id="modal-genre">Action</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Duration:</span>
+                            <span class="meta-value" id="modal-duration">2h 30m</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Completed:</span>
+                            <span class="meta-value" id="modal-completed">Yes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overall-rating">
+                        <div>Overall Rating</div>
+                        <div class="overall-rating-value" id="overall-rating">8.5</div>
+                    </div>
+                </div>
+                
+                <div class="rating-categories" id="rating-categories">
+                    <!-- Rating categories will be populated by JavaScript -->
+                </div>
+
+                <div class="review-section">
+                    <h3 class="review-title">Review</h3>
+                    <p class="review-text" id="review-text">This is a placeholder review text that will be replaced with actual content.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Omin &copy; 2025</p>
+    </footer>
+
+    <script>
+        // Enhanced sample data for media items with subcategories
+        const mediaData = {
+            games: [
+                {
+                    id: 1,
+                    title: "The Legend of Zelda: Breath of the Wild",
+                    year: 2017,
+                    genre: "Action-Adventure",
+                    duration: "50-100h",
+                    completed: true,
+                    cover: "https://static.wixstatic.com/media/345484_46551da839974a5a9ea36be62189218c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/345484_46551da839974a5a9ea36be62189218c~mv2.jpg",
+                    rating: 9.8,
+                    review: "<strong>Review:</strong>\nHiii",
+                    categories: [
+                        { 
+                            name: "Gameplay", 
+                            rating: 9.8, 
+                            multiplier: 1.2, 
+                            icon: "fas fa-gamepad",
+                            subcategories: [
+                                { name: "Combat System", rating: 9.5 },
+                                { name: "Exploration Mechanics", rating: 10.0 },
+                                { name: "Puzzle Design", rating: 9.0 },
+                                { name: "Physics System", rating: 9.8 },
+                                { name: "Player Agency", rating: 9.9 }
+                            ]
+                        },
+                        { 
+                            name: "Story", 
+                            rating: 8.5, 
+                            multiplier: 1.0, 
+                            icon: "fas fa-book",
+                            subcategories: [
+                                { name: "Main Narrative", rating: 8.0 },
+                                { name: "Character Development", rating: 8.5 },
+                                { name: "World Building", rating: 9.5 },
+                                { name: "Side Quests", rating: 8.0 }
+                            ]
+                        },
+                        { 
+                            name: "Graphics", 
+                            rating: 9.2, 
+                            multiplier: 1.1, 
+                            icon: "fas fa-paint-brush",
+                            subcategories: [
+                                { name: "Art Direction", rating: 9.8 },
+                                { name: "Environmental Design", rating: 9.5 },
+                                { name: "Character Models", rating: 8.5 },
+                                { name: "Visual Effects", rating: 9.0 },
+                                { name: "Performance", rating: 9.2 }
+                            ]
+                        },
+                        { 
+                            name: "Sound", 
+                            rating: 9.0, 
+                            multiplier: 1.0, 
+                            icon: "fas fa-volume-up",
+                            subcategories: [
+                                { name: "Soundtrack", rating: 9.5 },
+                                { name: "Sound Design", rating: 9.0 },
+                                { name: "Voice Acting", rating: 8.5 },
+                                { name: "Ambient Audio", rating: 9.0 }
+                            ]
+                        },
+                        { 
+                            name: "Replay Value", 
+                            rating: 8.0, 
+                            multiplier: 0.9, 
+                            icon: "fas fa-redo",
+                            subcategories: [
+                                { name: "Content Variety", rating: 8.5 },
+                                { name: "Endgame Content", rating: 7.5 },
+                                { name: "New Game+ Features", rating: 8.0 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 1,
+                    title: "Devil May Cry 5",
+                    year: 2017,
+                    genre: "Action",
+                    duration: "20h",
+                    completed: true,
+                    cover: "https://static0.gamerantimages.com/wordpress/wp-content/uploads/devil-may-cry-5-Cover-Art.jpg",
+                    rating: 6.4,
+                    review: "This is a PlaceHolder raaaah",
+                    
+                    categories: [
+                        { 
+                            name: "Gameplay", 
+                            rating: 6.2, 
+                            multiplier: 1.5, 
+                            icon: "fas fa-gamepad",
+                            subcategories: [
+                                { name: "Battle System: Dante and Nero", rating: 7},
+                                { name: "Battle System: V", rating: 3},
+                                { name: "Movement System", rating: 4 },
+                                { name: "Function Transition", rating: 3 },
+                                { name: "Function Harmony", rating: 4 },
+                                { name: "Enemies and Bosses", rating: 5},
+                                
+                            ]
+                        },
+                        { 
+                            name: "Story", 
+                            rating: 4.5, 
+                            multiplier: 0.25, 
+                            icon: "fas fa-book",
+                            subcategories: [
+                                { name: "Main Narrative", rating: 3 },
+                                { name: "World Building", rating: 6 },
+                                { name: "Realism", rating: 2 },
+                            ]
+                        },
+                        { 
+                            name: "Graphics", 
+                            rating: 7.8, 
+                            multiplier: 0.75,
+                            icon: "fas fa-paint-brush",
+                            subcategories: [
+                                { name: "Camera", rating: 4},
+                                { name: "Visual Effects", rating: 6},
+                                { name: "Graphic Fidelity and Beauty", rating: 9},
+                                
+                            ]
+                        },
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Hades",
+                    year: 2020,
+                    genre: "Action-RRRPG",
+                    duration: "15h-100h",
+                    completed: true,
+                    cover: "https://img-eshop.cdn.nintendo.net/i/dbc8c55a21688b446a5c57711b726956483a14ef8c5ddb861f897c0595ccb6b5.jpg",
+                    rating: 6.6,
+                    review: ("The game comes as an innovation in the 'Rougelike' genre, although I dislike that name, with a capturing multilayered skin featuring a great story and stunning visuals and even greater voice actor and general sound it comes as a masterclass in skinning, but does it's design supports this great of a skin?<br>The game suffers from many problems that makes me suspect that the game was first made to be a shooter since it contains many features that are more fitting and more seen in twin stick shooters, throughout the game my weapon of choice was non other than the Mr.Fishbone-looking 'Adamant Rail' the dodge, enemies, enviorment, all point to one conclusion: The design is for a shooter, thus unfit for melee combat.   The upgrades are too small scaled to be called that, while some are utterly useless, the boss design makes strategizing next to impossible and makes your win upgrade and boon based more than skill based. Overall, The enemy design is higher than the whole game which promts more care and more thought into the design process, and what was put defenitly wasn't enough."),
+                    categories: [
+                        { name: "Gameplay", rating: 4.8, multiplier: 1.5, icon: "fas fa-gamepad" },
+                        { name: "Story", rating: 8, multiplier: 0.5, icon: "fas fa-book" },
+                        { name: "Graphics", rating: 8.6, multiplier: 1, icon: "fas fa-paint-brush" },
+                    ]
+                },
+            ],
+            "live-action": [
+                {
+                    id: 4,
+                    title: "Inception",
+                    year: 2010,
+                    genre: "Sci-Fi Thriller",
+                    duration: "2h 28m",
+                    completed: true,
+                    cover: "https://images.unsplash.com/photo-1489599809505-f2d4c3f17743?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+                    rating: 8.8,
+                    review: "A mind-bending masterpiece that combines intellectual concepts with thrilling action. Christopher Nolan's direction is at its peak, creating a visually stunning and thought-provoking experience.",
+                    categories: [
+                        { 
+                            name: "Plot", 
+                            rating: 9.2, 
+                            multiplier: 1.2, 
+                            icon: "fas fa-scroll",
+                            subcategories: [
+                                { name: "Concept Originality", rating: 9.8 },
+                                { name: "Narrative Structure", rating: 9.5 },
+                                { name: "Pacing", rating: 8.5 },
+                                { name: "Plot Twists", rating: 9.0 }
+                            ]
+                        },
+                        { 
+                            name: "Acting", 
+                            rating: 8.5, 
+                            multiplier: 1.1, 
+                            icon: "fas fa-theater-masks",
+                            subcategories: [
+                                { name: "Lead Performance", rating: 9.0 },
+                                { name: "Supporting Cast", rating: 8.5 },
+                                { name: "Character Chemistry", rating: 8.0 },
+                                { name: "Emotional Range", rating: 8.5 }
+                            ]
+                        },
+                        { 
+                            name: "Cinematography", 
+                            rating: 9.0, 
+                            multiplier: 1.0, 
+                            icon: "fas fa-camera",
+                            subcategories: [
+                                { name: "Visual Composition", rating: 9.5 },
+                                { name: "Camera Work", rating: 9.0 },
+                                { name: "Lighting", rating: 8.5 },
+                                { name: "Color Palette", rating: 9.0 }
+                            ]
+                        },
+                        { 
+                            name: "Soundtrack", 
+                            rating: 8.8, 
+                            multiplier: 0.9, 
+                            icon: "fas fa-music",
+                            subcategories: [
+                                { name: "Score Composition", rating: 9.5 },
+                                { name: "Sound Design", rating: 8.5 },
+                                { name: "Audio Mixing", rating: 8.5 }
+                            ]
+                        },
+                        { 
+                            name: "Direction", 
+                            rating: 9.5, 
+                            multiplier: 1.1, 
+                            icon: "fas fa-video",
+                            subcategories: [
+                                { name: "Visual Storytelling", rating: 9.5 },
+                                { name: "Scene Pacing", rating: 9.0 },
+                                { name: "Actor Direction", rating: 9.5 },
+                                { name: "Creative Vision", rating: 10.0 }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            animation: [
+              {
+                  "id": 1759691051118,
+                  "title": "Monster",
+                  "year": 2004,
+                  "genre": "Drama",
+                  "duration": "74 Episodes",
+                  "completed": true,
+                  "cover": "https://m.media-amazon.com/images/I/815xJbtOVfL._UF1000,1000_QL80_.jpg",
+                  "rating": 6.5,
+                  "review": "Strong story structure that has a solid concept, a lot of realistic characters (other than two main ones: Tenma and Johan) especially Johan that is shallow psychology adaptation and whenever this aspect of him is shown it is weak and almost funny, as well as saddening to see such wasted potential<br><br>Although the story contains a lot of implied violence, and is more-or-less a violent story, the direction went too poor with violence almost. and now for the big one...<br><br><strong>74 EPISODES, FOR A STORY ABOUT A SINGLE DUDE!!!</strong> not only is it stretching it, it makes one of the most important aspects lose it's essence, that is: <strong>Mystery </strong>.<br><br>Mystery is the tension of the thought, it is how much clues are shown, how often and for what questions, if you show too much clues your mystery falls flat, if your puzzle is so simple, the mystery also falls flat. But there is an overlooked variable in this equation that is: The time upon which the question is presented, and in the case of Johan, 74 episodes is way too long, washing the mystery down as time goes on, yielding a mystery that you will get used to, which is the opposite of what a mystery should be, instead of bugging you, it's just there, much like the flawed villain that is Johan, no influence on anything, just there.<br>game",
+                  "categories": []
+                }                     
+                
+            ]
+        };
+
+        // DOM elements
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.section');
+        const modal = document.getElementById('detail-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalCover = document.getElementById('modal-cover');
+        const modalYear = document.getElementById('modal-year');
+        const modalGenre = document.getElementById('modal-genre');
+        const modalDuration = document.getElementById('modal-duration');
+        const modalCompleted = document.getElementById('modal-completed');
+        const overallRating = document.getElementById('overall-rating');
+        const ratingCategories = document.getElementById('rating-categories');
+        const reviewText = document.getElementById('review-text');
+        const searchBox = document.getElementById('search-box');
+        const sortSelect = document.getElementById('sort-select');
+        const filterSelect = document.getElementById('filter-select');
+        const totalCount = document.getElementById('total-count');
+        const avgRating = document.getElementById('avg-rating');
+        const highestRating = document.getElementById('highest-rating');
+        const recentCount = document.getElementById('recent-count');
+
+        // Initialize the page
+        function initPage() {
+            // Populate media lists
+            for (const category in mediaData) {
+                const listElement = document.getElementById(`${category}-list`);
+                const sortedItems = sortMediaItems(mediaData[category], 'rating-desc');
+                sortedItems.forEach(item => {
+                    const mediaItem = createMediaItem(item, category);
+                    listElement.appendChild(mediaItem);
+                });
+            }
+
+            // Update stats
+            updateStats();
+
+            // Set up tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetSection = tab.getAttribute('data-section');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show target section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetSection) {
+                            section.classList.add('active');
+                        }
+                    });
+                    
+                    // Update stats for current section
+                    updateStats();
+                });
+            });
+
+            // Set up modal closing
+            closeModalBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+
+            // Set up search
+            searchBox.addEventListener('input', handleSearch);
+
+            // Set up sorting
+            sortSelect.addEventListener('change', handleSort);
+            
+            // Set up filtering
+            filterSelect.addEventListener('change', handleFilter);
+        }
+
+        // Create a media item element
+        function createMediaItem(item, category) {
+            const mediaItem = document.createElement('div');
+            mediaItem.className = 'media-card';
+            mediaItem.setAttribute('data-id', item.id);
+            mediaItem.setAttribute('data-category', category);
+            mediaItem.setAttribute('data-genre', item.genre.toLowerCase());
+            
+            mediaItem.innerHTML = `
+                <div class="cover-container">
+                    <img src="${item.cover}" alt="${item.title}" class="cover-image">
+                    <div class="media-badge">${category === 'games' ? 'G' : category === 'live-action' ? 'LA' : 'A'}</div>
+                </div>
+                <div class="media-info">
+                    <div class="media-header">
+                        <div>
+                            <div class="media-title">${item.title}</div>
+                            <div class="media-year">${item.year}</div>
+                        </div>
+                        <div class="rating">${item.rating}</div>
+                    </div>
+                    <div class="media-footer">
+                        <div class="media-genre">${item.genre}</div>
+                        <div class="media-duration">${item.duration}</div>
+                    </div>
+                </div>
+            `;
+            
+            mediaItem.addEventListener('click', () => {
+                showMediaDetails(item);
+            });
+            
+            return mediaItem;
+        }
+        function renderFormattedReview(reviewText) {
+            // Create a temporary div to parse the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = reviewText;
+            
+            // Apply styles to the formatted elements
+            const elements = tempDiv.querySelectorAll('h3');
+            elements.forEach(el => {
+                el.style.fontSize = '1.3rem';
+                el.style.margin = '1rem 0 0.5rem 0';
+                el.style.color = 'var(--primary)';
+            });
+            
+            const paragraphs = tempDiv.querySelectorAll('p');
+            paragraphs.forEach(p => {
+                p.style.marginBottom = '1rem';
+                p.style.lineHeight = '1.6';
+            });
+            
+            const blockquotes = tempDiv.querySelectorAll('blockquote');
+            blockquotes.forEach(blockquote => {
+                blockquote.style.borderLeft = '4px solid var(--secondary)';
+                blockquote.style.paddingLeft = '1rem';
+                blockquote.style.margin = '1rem 0';
+                blockquote.style.fontStyle = 'italic';
+                blockquote.style.color = '#555';
+            });
+            
+            const lists = tempDiv.querySelectorAll('ul, ol');
+            lists.forEach(list => {
+                list.style.margin = '1rem 0';
+                list.style.paddingLeft = '1.5rem';
+            });
+            
+            const listItems = tempDiv.querySelectorAll('li');
+            listItems.forEach(li => {
+                li.style.marginBottom = '0.5rem';
+            });
+            
+            const strongElements = tempDiv.querySelectorAll('strong');
+            strongElements.forEach(strong => {
+                strong.style.fontWeight = 'bold';
+            });
+            
+            const emElements = tempDiv.querySelectorAll('em');
+            emElements.forEach(em => {
+                em.style.fontStyle = 'italic';
+            });
+            
+            const uElements = tempDiv.querySelectorAll('u');
+            uElements.forEach(u => {
+                u.style.textDecoration = 'underline';
+            });
+            
+            return tempDiv.innerHTML;
+        }
+        // Show media details in modal
+        function showMediaDetails(item) {
+            modalTitle.textContent = item.title;
+            modalCover.src = item.cover;
+            modalYear.textContent = item.year;
+            modalGenre.textContent = item.genre;
+            modalDuration.textContent = item.duration;
+            modalCompleted.textContent = item.completed ? 'Yes' : 'No';
+            overallRating.textContent = item.rating;
+            document.getElementById('review-text').innerHTML = renderFormattedReview(item.review);
+
+            
+            
+            // Clear previous categories
+            ratingCategories.innerHTML = '';
+            
+            // Add new categories with subcategories
+            item.categories.forEach(category => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'rating-category';
+                categoryElement.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-name">
+                            <i class="${category.icon} category-icon"></i>
+                            ${category.name}
+                        </div>
+                        <div class="category-rating">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${category.rating * 10}%"></div>
+                            </div>
+                            <span class="rating-value">${category.rating}</span>
+                            <span class="multiplier">×${category.multiplier}</span>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </div>
+                    </div>
+                    <div class="subcategories">
+                        ${category.subcategories.map(sub => `
+                            <div class="subcategory">
+                                <div class="subcategory-name">${sub.name}</div>
+                                <div class="subcategory-rating">
+                                    <div class="subcategory-progress-bar">
+                                        <div class="subcategory-progress-fill" style="width: ${sub.rating * 10}%"></div>
+                                    </div>
+                                    <span class="subcategory-value">${sub.rating}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Add click event to toggle subcategories
+                const categoryHeader = categoryElement.querySelector('.category-header');
+                const subcategories = categoryElement.querySelector('.subcategories');
+                
+                categoryHeader.addEventListener('click', () => {
+                    categoryHeader.classList.toggle('active');
+                    if (categoryHeader.classList.contains('active')) {
+                        subcategories.style.display = 'block';
+                    } else {
+                        subcategories.style.display = 'none';
+                    }
+                });
+                
+                ratingCategories.appendChild(categoryElement);
+            });
+            
+            // Show modal
+            modal.classList.add('active');
+        }
+
+        // Handle search functionality
+        function handleSearch() {
+            const searchTerm = searchBox.value.toLowerCase();
+            const activeSection = document.querySelector('.section.active').id;
+            const mediaItems = document.querySelectorAll(`#${activeSection}-list .media-card`);
+            
+            mediaItems.forEach(item => {
+                const title = item.querySelector('.media-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Handle sorting functionality
+        function handleSort() {
+            const sortValue = sortSelect.value;
+            const activeSection = document.querySelector('.section.active').id;
+            const listElement = document.getElementById(`${activeSection}-list`);
+            const mediaItems = Array.from(listElement.children);
+            
+            // Get the original data for this section
+            const sectionData = mediaData[activeSection];
+            
+            // Sort the data
+            const sortedData = sortMediaItems(sectionData, sortValue);
+            
+            // Clear the list
+            listElement.innerHTML = '';
+            
+            // Re-add sorted items
+            sortedData.forEach(item => {
+                const mediaItem = createMediaItem(item, activeSection);
+                listElement.appendChild(mediaItem);
+            });
+            
+            // Apply current filter
+            handleFilter();
+        }
+
+        // Handle filtering functionality
+        function handleFilter() {
+            const filterValue = filterSelect.value;
+            const activeSection = document.querySelector('.section.active').id;
+            const mediaItems = document.querySelectorAll(`#${activeSection}-list .media-card`);
+            
+            mediaItems.forEach(item => {
+                const genre = item.getAttribute('data-genre');
+                if (filterValue === 'all' || genre.includes(filterValue)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Sort media items based on criteria
+        function sortMediaItems(items, criteria) {
+            return [...items].sort((a, b) => {
+                switch(criteria) {
+                    case 'rating-desc':
+                        return b.rating - a.rating;
+                    case 'rating-asc':
+                        return a.rating - b.rating;
+                    case 'title-asc':
+                        return a.title.localeCompare(b.title);
+                    case 'title-desc':
+                        return b.title.localeCompare(a.title);
+                    case 'year-desc':
+                        return b.year - a.year;
+                    case 'year-asc':
+                        return a.year - b.year;
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const activeSection = document.querySelector('.section.active').id;
+            const sectionItems = mediaData[activeSection];
+            
+            totalCount.textContent = sectionItems.length;
+            
+            const ratings = sectionItems.map(item => item.rating);
+            const avg = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+            avgRating.textContent = avg.toFixed(1);
+            
+            highestRating.textContent = Math.max(...ratings).toFixed(1);
+            
+            // Count recent items (last 2 years)
+            const currentYear = new Date().getFullYear();
+            const recentItems = sectionItems.filter(item => item.year >= currentYear - 2);
+            recentCount.textContent = recentItems.length;
+        }
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
